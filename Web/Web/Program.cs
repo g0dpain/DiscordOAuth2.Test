@@ -17,8 +17,23 @@ builder.Services
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Cookie settings
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+    options.LoginPath = "/signin";
+    options.AccessDeniedPath = "/accessdenied";
+    options.LogoutPath = "/signout";
+    options.SlidingExpiration = true;
+});
+
 builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddAuthentication(authOptions =>
+    {
+        authOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })    
     .AddCookie(cookieOptions =>
     {
         cookieOptions.LoginPath = "/signin";
@@ -28,9 +43,13 @@ builder.Services
 {
     discordOptions.ClientId = "";
     discordOptions.ClientSecret = "";
-    discordOptions.Scope.Add("");
+    discordOptions.Scope.Add("identify");
 
     discordOptions.SaveTokens = true;
+
+    discordOptions.UserInformationEndpoint = "https://discordapp.com/api/users/@me";
+    discordOptions.TokenEndpoint = "https://discordapp.com/api/oauth2/token";
+    discordOptions.AuthorizationEndpoint = "https://discordapp.com/api/oauth2/authorize";
 });
 
 var app = builder.Build();

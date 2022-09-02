@@ -1,5 +1,16 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using Microsoft.AspNetCore.Authentication
+@model AuthenticationScheme[]
+
+<div class="jumbotron">
+    <p class="lead text-left">Login über Discord</p>
+
+    @foreach (var scheme in Model!.OrderBy(p => p.DisplayName))
+    {
+        <form action="/signin" method="post">
+            <input type="hidden" name="Provider" value="@scheme.Name" />
+            <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+
+            <button class="btn btn-lg btn-success m-1" type="submit">Connect using @scheme.DisplayName</button>
+        </form>
+    }
+</div>
